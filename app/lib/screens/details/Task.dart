@@ -15,69 +15,178 @@ class Task {
 }
 
 class TaskScreen extends StatefulWidget {
-  const TaskScreen({super.key});
-
+  const TaskScreen({super.key, required addTask});
 
   @override
   _TaskScreenState createState() => _TaskScreenState();
 }
 
 class _TaskScreenState extends State<TaskScreen> {
-  List<Task> tasks = [
-    Task(
-        title: "Buy groceries",
-        priority: "High",
-        date: DateTime.now().add(Duration(days: 1)),
-        time: "10:00 AM"),
-    Task(
-        title: "Attend meeting",
-        priority: "Normal",
-        date: DateTime.now(),
-        time: "2:00 PM"),
-    Task(
-        title: "Complete project",
-        priority: "High",
-        date: DateTime.now().add(Duration(days: 3)),
-        time: "11:00 AM"),
-  ];
+  List<Task> tasks = [];
+  final _formKey = GlobalKey<FormState>();
+  final _titleController = TextEditingController();
+  final _priorityController = TextEditingController();
+  DateTime _dateTime = DateTime.now();
+  final _timeController = TextEditingController();
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _dateTime,
+      firstDate: DateTime(2015, 8),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != _dateTime) {
+      setState(() {
+        _dateTime = picked;
+      });
+    }
+  }
+
+  Future<void> _selectTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(_dateTime),
+    );
+    if (picked != null) {
+      setState(() {
+        _dateTime = DateTime(
+          _dateTime.year,
+          _dateTime.month,
+          _dateTime.day,
+          picked.hour,
+          picked.minute,
+        );
+      });
+    }
+  }
+
+
+  // method to create a new task and add it to the list
+  void addTask(String title, String priority, DateTime date, String time) {
+    final newTask = Task(
+      title: title,
+      priority: priority,
+      date: date,
+      time: time,
+    );
+    setState(() {
+      tasks.add(newTask);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Tasks'),
-      ),
-      body: ListView.builder(
-        itemCount: tasks.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(tasks[index].title),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 5),
-                Text('Priority: ${tasks[index].priority}'),
-                SizedBox(height: 5),
-                Text('Date: ${tasks[index].date.toString().substring(0, 10)}'),
-                SizedBox(height: 5),
-                Text('Time: ${tasks[index].time}'),
-              ],
+        appBar: AppBar(
+          title: const Text('Add new task'),
+        ),
+        body: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  TextFormField(
+                    controller: _titleController,
+                    decoration: const InputDecoration(
+                      labelText: 'Title',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a title';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16.0),
+                  TextFormField(
+                    controller: _priorityController,
+                    decoration: const InputDecoration(
+                      labelText: 'Priority',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a priority';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16.0),
+                  InkWell(
+                    onTap: () => _selectDate(context),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.calendar_today),
+                        const SizedBox(width: 8.0),
+                        const Text(
+                          'Date',
+                          style: TextStyle(fontSize: 18.0),
+                        ),
+                        const SizedBox(width: 8.0),
+                        Text(
+                          '${_dateTime.year}-${_dateTime.month}-${_dateTime.day}',
+                          style: const TextStyle(fontSize: 18.0),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16.0),
+                  InkWell(
+                    onTap: () => _selectTime(context),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.access_time),
+                        const SizedBox(width: 8.0),
+                        const Text(
+                          'Time',
+                          style: TextStyle(fontSize: 18.0),
+                        ),
+                        const SizedBox(width: 8.0),
+                        Text(
+                          '${_dateTime.hour}:${_dateTime.minute}',
+                          style: const TextStyle(fontSize: 18.0),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16.0),
+                  TextFormField(
+                    controller: _timeController,
+                    decoration: const InputDecoration(
+                      labelText: 'Time',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a time';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16.0),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        final task = Task(
+                          title: _titleController.text,
+                          priority: _priorityController.text,
+                          date: _dateTime,
+                          time: _timeController.text,
+                        );
+                        // Do something with the task, like saving it to a database
+                      }
+                    },
+                    child: const Text('Add Task'),
+                  ),
+                ],
+              ),
             ),
-            trailing: IconButton(
-              icon: Icon(Icons.alarm),
-              onPressed: () {
-                // TODO: Add code to show reminder options
-              },
-            ),
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () {
-          // TODO: Add code to show task creation form
-        },
-      ),
-    );
+          ),
+        ));
   }
 }

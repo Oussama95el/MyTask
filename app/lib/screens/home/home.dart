@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import '../../models/MyIcon.dart';
 import '../../models/Notification.dart';
 import '../details/Task.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-FlutterLocalNotificationsPlugin();
+    FlutterLocalNotificationsPlugin();
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -12,44 +13,43 @@ class HomePage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _HomePageState();
 }
-// @override
-// Widget build(BuildContext context) {
-//   return Scaffold(
-//     appBar: AppBar(
-//       title: const Text('Home Page'),
-//     ),
-//     body: const Center(
-//       child: Text('Home Page'),
-//     ),
-//   );
-// }
 
-  class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> {
+  get addTask => null;
+  // state of the icon
+  late MyIcon _myIconState;
+
+  String _formatDate(DateTime date) {
+    return '${date.day}/${date.month}/${date.year}';
+  }
 
   @override
   void initState() {
     super.initState();
+    _myIconState = MyIcon();
   }
-
 
   @override
   Widget build(BuildContext context) {
+    // formated date for the task
+
+
     var tasks = [
       Task(
           title: "Buy groceries",
           priority: "High",
-          date: DateTime.now().add(Duration(days: 1)),
-          time: "10:00 AM"),
+          date: DateTime.now().add(const Duration(days: 1)),
+          time: "10:00"),
       Task(
           title: "Attend meeting",
           priority: "Normal",
           date: DateTime.now(),
-          time: "2:00 PM"),
+          time: "14:00"),
       Task(
           title: "Complete project",
           priority: "High",
-          date: DateTime.now().add(Duration(days: 3)),
-          time: "11:00 AM"),
+          date: DateTime.now(),
+          time: "12:00"),
     ];
     return Scaffold(
       appBar: AppBar(
@@ -71,7 +71,15 @@ class HomePage extends StatefulWidget {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/addTask');
+                  //  display the task screen
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => TaskScreen(
+                          addTask: addTask,
+                        ),
+                      ),
+                    );
                   },
                   child: const Text('Add Task'),
                 ),
@@ -89,7 +97,17 @@ class HomePage extends StatefulWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 5),
-                      Text('Priority: ${tasks[index].priority}'),
+                      Text(
+                        'Priority: ${tasks[index].priority}',
+                        style: TextStyle(
+                          // change color based on priority
+                          color: tasks[index].priority == 'High'
+                              ? Colors.red
+                              : tasks[index].priority == 'Normal'
+                                  ? Colors.green
+                                  : Colors.blue,
+                        ),
+                      ),
                       const SizedBox(height: 5),
                       Text('Date: ${tasks[index].date}'),
                       const SizedBox(height: 5),
@@ -97,15 +115,13 @@ class HomePage extends StatefulWidget {
                     ],
                   ),
                   trailing: IconButton(
-                    icon: const Icon(Icons.notifications),
-                    onPressed: () {
-                      Noti.showNotification(
-                        flutterLocalNotificationsPlugin: flutterLocalNotificationsPlugin,
-                        title: tasks[index].title,
-                        body: tasks[index].priority,
-                        payload: index,
-                      );
-                    },
+                    icon: MyIcon(),
+                    onPressed: () => _myIconState.setTimerToNotification(
+                      tasks[index].title,
+                      tasks[index].priority,
+                      tasks[index].date,
+                      tasks[index].time,
+                    ),
                   ),
                 );
               },
@@ -114,4 +130,5 @@ class HomePage extends StatefulWidget {
         ],
       ),
     );
-  }}
+  }
+}
