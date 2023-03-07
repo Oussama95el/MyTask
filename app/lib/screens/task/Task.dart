@@ -1,21 +1,31 @@
+import 'package:awesome_notifications/src/models/received_models/received_action.dart';
 import 'package:flutter/material.dart';
+import '../../constants/Repetition.dart';
 
 class Task {
   final String title;
   final String priority;
   final DateTime date;
   final String time;
+  bool status;
+  final Repetition repetition;
 
   Task({
     required this.title,
     required this.priority,
     required this.date,
     required this.time,
+    this.status = false,
+    this.repetition = Repetition.daily,
   });
 }
 
+
+
+
+
 class TaskScreen extends StatefulWidget {
-  const TaskScreen({super.key, required addTask});
+  const TaskScreen({super.key, required ReceivedAction receivedAction});
 
   @override
   _TaskScreenState createState() => _TaskScreenState();
@@ -103,15 +113,25 @@ class _TaskScreenState extends State<TaskScreen> {
                     },
                   ),
                   const SizedBox(height: 16.0),
-                  TextFormField(
-                    controller: _priorityController,
+                  // a Select input with values High, Normal and Low
+                  DropdownButtonFormField<String>(
+                    onChanged: (value) {
+                      _priorityController.text = value!;
+                    },
                     decoration: const InputDecoration(
                       labelText: 'Priority',
                       border: OutlineInputBorder(),
                     ),
+                    items: const <String>['High', 'Normal', 'Low']
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter a priority';
+                        return 'Please select a priority';
                       }
                       return null;
                     },

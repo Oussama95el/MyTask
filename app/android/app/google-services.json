@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "183108945189",
+    "project_id": "my-task-e1a1e",
+    "storage_bucket": "my-task-e1a1e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:183108945189:android:9425c6037d753fe66b46cc",
+        "android_client_info": {
+          "package_name": "com.simplon.mytask1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "183108945189-trfjn5qvde9um3gpgijjar04kmtbspr7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDRtkHvcEMpOZoKqqAjk-rzchxYvbrNg_s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "183108945189-trfjn5qvde9um3gpgijjar04kmtbspr7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
