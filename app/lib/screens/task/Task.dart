@@ -8,7 +8,7 @@ import '../../constants/Repetition.dart';
 class Task {
   final String title;
   final String priority;
-  final DateTime date;
+  final String date;
   final String time;
   bool status;
   final Repetition repetition;
@@ -92,7 +92,7 @@ class _TaskScreenState extends State<TaskScreen> {
       final task = Task(
         title: _titleController.text,
         priority: _priorityController.text,
-        date: _dateTime,
+        date: _dateTime.toString(),
         time: _timeController.text,
         repetition: Repetition.values.firstWhere(
           (element) => element.toString() == _repetitionController.text,
@@ -223,7 +223,7 @@ class _TaskScreenState extends State<TaskScreen> {
                         final task = Task(
                           title: _titleController.text,
                           priority: _priorityController.text,
-                          date: _dateTime,
+                          date: _dateTime.toString(),
                           time: _timeController.text,
                         );
                         print(task.toString());

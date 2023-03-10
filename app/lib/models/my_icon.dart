@@ -12,8 +12,6 @@ class MyIcon extends StatefulWidget {
   bool get isPressed => _isPressed;
   set isPressed(bool value) { _isPressed = value; }
   Task? task;
-
-
   MyIcon({super.key,this.task });
 
 
@@ -25,30 +23,30 @@ class MyIcon extends StatefulWidget {
 
 
 
-  setTimerToNotification(String title, String priority, DateTime date, String time ) {
-    final notificationTime = DateTime(
-      date.year,
-      date.month,
-      date.day,
-      int.parse(time.split(":")[0]),
-      int.parse(time.split(":")[1]),
-    );
-    const oneSec = Duration(minutes: 1);
-    Timer.periodic(
-      oneSec,
-          (timer) {
-        final now = DateTime.now();
-        if (now == notificationTime) {
-          // Noti.showNotification(
-          //     flutterLocalNotificationsPlugin: flutterLocalNotificationsPlugin,
-          //     title: title,
-          //     body: priority
-          // );
-          timer.cancel();
-        }
-      },
-    );
-  }
+  // setTimerToNotification(String title, String priority, DateTime date, String time ) {
+  //   final notificationTime = DateTime(
+  //     date.year,
+  //     date.month,
+  //     date.day,
+  //     int.parse(time.split(":")[0]),
+  //     int.parse(time.split(":")[1]),
+  //   );
+  //   const oneSec = Duration(minutes: 1);
+  //   Timer.periodic(
+  //     oneSec,
+  //         (timer) {
+  //       final now = DateTime.now();
+  //       if (now == notificationTime) {
+  //         // Noti.showNotification(
+  //         //     flutterLocalNotificationsPlugin: flutterLocalNotificationsPlugin,
+  //         //     title: title,
+  //         //     body: priority
+  //         // );
+  //         timer.cancel();
+  //       }
+  //     },
+  //   );
+  // }
   }
 
 
@@ -64,10 +62,6 @@ class _MyIconState extends State<MyIcon> {
         setState(() {
           widget._isPressed = true;
         });
-        NotificationService().displayNotification(super.widget.task!);
-        // if (widget._isPressed) {
-        //   // Noti.showNotification(title: "Testing", body: "It's working", payload: "12039923", fln: flutterLocalNotificationsPlugin);
-        // }
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),

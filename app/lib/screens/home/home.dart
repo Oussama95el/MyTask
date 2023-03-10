@@ -1,10 +1,12 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
+import 'package:mytask1/services/notification.dart';
 import '../../models/my_icon.dart';
+import '../../services/auth.dart';
 import '../task/Task.dart';
 
 class HomePage extends StatefulWidget {
-  final title;
+  final String? title;
   static final GlobalKey<NavigatorState> navigatorKey =
       GlobalKey<NavigatorState>();
   static const String name = 'Awesome Notifications - Example App';
@@ -38,24 +40,26 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // formated date for the task
 
+    final _auth = AuthService();
+
+    // formated date for the task
     var tasks = [
       Task(
           title: "Buy groceries",
           priority: "High",
-          date: DateTime.now().add(const Duration(days: 1)),
+          date: _formatDate(DateTime.now()),
           time: "10:00"),
       Task(
           title: "Attend meeting",
           priority: "Normal",
-          date: DateTime.now(),
+          date: _formatDate(DateTime.now().add(const Duration(days: 2))),
           time: "14:00"),
       Task(
           title: "Complete project",
           priority: "High",
-          date: DateTime.now(),
-          time: "11:20"),
+          date: _formatDate(DateTime.now().add(const Duration(days: 3))),
+          time: "15:45"),
     ];
     return Scaffold(
       appBar: AppBar(
@@ -78,15 +82,22 @@ class _HomePageState extends State<HomePage> {
                           // Close the modal and perform the Add Task action
                           Navigator.pop(context);
                           // Add Task code goes here
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const TaskScreen(),
+                            ),
+                          );
                         },
                       ),
                       ListTile(
                         leading: const Icon(Icons.logout),
                         title: const Text('Logout'),
-                        onTap: () {
+                        onTap: () async {
                           // Close the modal and perform the Logout action
                           Navigator.pop(context);
                           // Logout code goes here
+                          await _auth.signOut();
                         },
                       ),
                     ],
@@ -162,6 +173,10 @@ class _HomePageState extends State<HomePage> {
                       setState(() {
                         myIcon.isPressed = !myIcon.isPressed;
                       });
+                      if (myIcon.isPressed) {
+                        print("pressed");
+                        NotificationService().displayNotification(tasks[index]);
+                      }
                     },
                   ),
                 );

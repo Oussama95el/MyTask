@@ -41,13 +41,65 @@ class AuthService {
   }
 
   // Sign in with email and password
-
+  Future signInWithEmailAndPassword(String email, String password) async {
+    try {
+      final userCredentials = await _auth.signInWithEmailAndPassword(
+          email: email, password: password);
+      User? user = userCredentials.user;
+      return _userFromFirebaseUser(user);
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case 'user-not-found':
+          print('No user found for that email.');
+          break;
+        case 'wrong-password':
+          print('Wrong password provided for that user.');
+          break;
+        case 'network-request-failed':
+          print('Network error.');
+          break;
+        default:
+          print('Unknown error.');
+          break;
+      }
+      return null;
+    }
+  }
 
 
   // Sign in with Google
 
 
   // Register with email and password
+  Future registerWithEmailAndPassword(String fullName, String email, String password) async {
+    try {
+      final userCredentials = await _auth.createUserWithEmailAndPassword(
+          email: email, password: password);
+      User? user = userCredentials.user;
+      return _userFromFirebaseUser(user);
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case 'email-already-in-use':
+          print('The account already exists for that email.');
+          break;
+        case 'network-request-failed':
+          print('Network error.');
+          break;
+        default:
+          print('Unknown error.');
+          break;
+      }
+      return null;
+    }
+  }
 
   // Sign out
+  Future signOut() async {
+    try {
+      return await _auth.signOut();
+    } catch (e) {
+      print("Error signing out: ${e.toString()}");
+      return null;
+    }
+  }
 }

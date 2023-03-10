@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mytask1/firebase_options.dart';
 import 'package:mytask1/models/user.dart';
+import 'package:mytask1/screens/authenticate/register.dart';
 import 'package:mytask1/screens/authenticate/sign_in.dart';
 import 'package:mytask1/screens/task/Task.dart';
 import 'package:mytask1/screens/wrapper.dart';
@@ -21,7 +22,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // This is required to initialize the plugin for Android Notifications
   AwesomeNotifications().initialize(
-      // set the icon to null if you want to use the default app icon
+    // set the icon to null if you want to use the default app icon
       null,
       [
         NotificationChannel(
@@ -44,7 +45,7 @@ Future<void> main() async {
 
 class MyApp extends StatefulWidget {
   static final GlobalKey<NavigatorState> navigatorKey =
-      GlobalKey<NavigatorState>();
+  GlobalKey<NavigatorState>();
   static const String name = 'MyTask Manager App';
   static const Color mainColor = Colors.blue;
 
@@ -61,11 +62,11 @@ class _MyAppState extends State<MyApp> {
     AwesomeNotifications().setListeners(
         onActionReceivedMethod: NotificationController.onActionReceivedMethod,
         onNotificationCreatedMethod:
-            NotificationController.onNotificationCreatedMethod,
+        NotificationController.onNotificationCreatedMethod,
         onNotificationDisplayedMethod:
-            NotificationController.onNotificationDisplayedMethod,
+        NotificationController.onNotificationDisplayedMethod,
         onDismissActionReceivedMethod:
-            NotificationController.onDismissActionReceivedMethod);
+        NotificationController.onDismissActionReceivedMethod);
 
     super.initState();
   }
@@ -100,19 +101,25 @@ class _MyAppState extends State<MyApp> {
               return MaterialPageRoute(builder: (context) {
                 return const SignIn();
               });
+
+            case '/register':
+              return MaterialPageRoute( builder: (context) => Register());
             default:
               MaterialPageRoute(
-                  builder: (context) => ErrorPage(
-                    errorCode: 404,
-                    errorMessage: 'The page ${settings.name} does not exist',
-                  ));
+                  builder: (context) =>
+                      ErrorPage(
+                        errorCode: 404,
+                        errorMessage: 'The page ${settings
+                            .name} does not exist',
+                      ));
               assert(false, 'Page ${settings.name} not found');
               return null;
           }
         },
         onUnknownRoute: (settings) {
           return MaterialPageRoute(
-              builder: (context) => ErrorPage(
+              builder: (context) =>
+                  ErrorPage(
                     errorCode: 404,
                     errorMessage: 'The page ${settings.name} does not exist',
                   ));
