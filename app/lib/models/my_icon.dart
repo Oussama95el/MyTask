@@ -1,21 +1,20 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:mytask1/models/Notification.dart';
-import 'package:mytask1/services/NotificationService.dart';
+import 'package:mytask1/services/notification.dart';
+
+import '../screens/task/Task.dart';
 
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-FlutterLocalNotificationsPlugin();
 
 class MyIcon extends StatefulWidget {
   bool _isPressed = false;
   bool get isPressed => _isPressed;
   set isPressed(bool value) { _isPressed = value; }
+  Task? task;
 
 
-  MyIcon({super.key});
+  MyIcon({super.key,this.task });
 
 
 
@@ -65,7 +64,7 @@ class _MyIconState extends State<MyIcon> {
         setState(() {
           widget._isPressed = true;
         });
-        NotificationService().displayNotification();
+        NotificationService().displayNotification(super.widget.task!);
         // if (widget._isPressed) {
         //   // Noti.showNotification(title: "Testing", body: "It's working", payload: "12039923", fln: flutterLocalNotificationsPlugin);
         // }

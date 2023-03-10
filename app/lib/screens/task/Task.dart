@@ -1,6 +1,9 @@
 import 'package:awesome_notifications/src/models/received_models/received_action.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import '../../constants/Repetition.dart';
+
+
 
 class Task {
   final String title;
@@ -18,6 +21,11 @@ class Task {
     this.status = false,
     this.repetition = Repetition.daily,
   });
+
+  @override
+  String toString() {
+    return 'Task{title: $title, priority: $priority, date: $date, time: $time, status: $status, repetition: $repetition}';
+  }
 }
 
 
@@ -25,7 +33,7 @@ class Task {
 
 
 class TaskScreen extends StatefulWidget {
-  const TaskScreen({super.key, required ReceivedAction receivedAction});
+  const TaskScreen({super.key});
 
   @override
   _TaskScreenState createState() => _TaskScreenState();
@@ -38,7 +46,11 @@ class _TaskScreenState extends State<TaskScreen> {
   final _priorityController = TextEditingController();
   DateTime _dateTime = DateTime.now();
   final _timeController = TextEditingController();
+  final _repetitionController = TextEditingController();
 
+  /// method to show a date picker and set the selected date to the _dateTime variable
+  /// @param context
+  /// @return Future<void>
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -52,7 +64,9 @@ class _TaskScreenState extends State<TaskScreen> {
       });
     }
   }
-
+  /// method to show a time picker and set the selected time to the _dateTime variable
+  /// @param context
+  /// @return Future<void>
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
@@ -72,17 +86,21 @@ class _TaskScreenState extends State<TaskScreen> {
   }
 
 
-  // method to create a new task and add it to the list
-  void addTask(String title, String priority, DateTime date, String time) {
-    final newTask = Task(
-      title: title,
-      priority: priority,
-      date: date,
-      time: time,
-    );
-    setState(() {
-      tasks.add(newTask);
-    });
+  // save task into firebase database and navigate to home screen
+  void _saveTask() {
+    if (_formKey.currentState!.validate()) {
+      final task = Task(
+        title: _titleController.text,
+        priority: _priorityController.text,
+        date: _dateTime,
+        time: _timeController.text,
+        repetition: Repetition.values.firstWhere(
+          (element) => element.toString() == _repetitionController.text,
+        ),
+      );
+      tasks.add(task);
+      Navigator.pop(context, tasks);
+    }
   }
 
   @override
@@ -175,15 +193,25 @@ class _TaskScreenState extends State<TaskScreen> {
                     ),
                   ),
                   const SizedBox(height: 16.0),
-                  TextFormField(
-                    controller: _timeController,
+                  // a Select input with values Daily, Weekly and Monthly
+                  DropdownButtonFormField<String>(
+                    onChanged: (value) {
+                      _repetitionController.text = value!;
+                    },
                     decoration: const InputDecoration(
-                      labelText: 'Time',
+                      labelText: 'Schedule repetition',
                       border: OutlineInputBorder(),
                     ),
+                    items: const <String>['Daily', 'Weekly', 'Monthly']
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter a time';
+                        return 'Please select a schedule repetition';
                       }
                       return null;
                     },
@@ -198,6 +226,7 @@ class _TaskScreenState extends State<TaskScreen> {
                           date: _dateTime,
                           time: _timeController.text,
                         );
+                        print(task.toString());
                         // Do something with the task, like saving it to a database
                       }
                     },

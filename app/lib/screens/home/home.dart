@@ -1,19 +1,14 @@
-
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import '../../models/MyIcon.dart';
+import '../../models/my_icon.dart';
 import '../task/Task.dart';
-
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
 
 class HomePage extends StatefulWidget {
   final title;
-  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
   static const String name = 'Awesome Notifications - Example App';
   static const Color mainColor = Colors.deepPurple;
-
 
   const HomePage({super.key, this.title});
 
@@ -25,7 +20,7 @@ class _HomePageState extends State<HomePage> {
   get addTask => null;
 
   // state of the icon
-  MyIcon myIcon = MyIcon();
+  final MyIcon myIcon = MyIcon();
 
   String _formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
@@ -65,6 +60,42 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home Page'),
+        elevation: 0,
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                builder: (BuildContext context) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ListTile(
+                        leading: const Icon(Icons.add),
+                        title: const Text('Add Task'),
+                        onTap: () {
+                          // Close the modal and perform the Add Task action
+                          Navigator.pop(context);
+                          // Add Task code goes here
+                        },
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.logout),
+                        title: const Text('Logout'),
+                        onTap: () {
+                          // Close the modal and perform the Logout action
+                          Navigator.pop(context);
+                          // Logout code goes here
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -83,14 +114,12 @@ class _HomePageState extends State<HomePage> {
                 ElevatedButton(
                   onPressed: () {
                     // //  display the task screen
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) => TaskScreen(
-                    //        receivedAction: null,
-                    //     ),
-                    //   ),
-                    // );
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const TaskScreen(),
+                      ),
+                    );
                   },
                   child: const Text('Add Task'),
                 ),
@@ -126,7 +155,9 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
                   trailing: IconButton(
-                    icon: MyIcon(),
+                    icon: MyIcon(
+                      task: tasks[index],
+                    ),
                     onPressed: () {
                       setState(() {
                         myIcon.isPressed = !myIcon.isPressed;
