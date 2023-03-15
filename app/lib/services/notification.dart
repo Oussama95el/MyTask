@@ -1,45 +1,57 @@
 import 'dart:math';
-
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:mytask1/screens/task/Task.dart';
+import '../models/task.dart';
 
 class NotificationService {
 
 
   List<int> _timeToArray(String time) {
     List<int> timeArray = [];
-    timeArray.add(int.parse(time.substring(0, 2)));
-    timeArray.add(int.parse(time.substring(3, 5)));
+    time.split(':').forEach((element) {
+      timeArray.add(int.parse(element));
+    });
     return timeArray;
   }
 
+
   List<int> _dateToArray(String date) {
+
+    print(date);
+    // split the date by whitespace
+    date = date.split(' ')[0];
     List<int> dateArray = [];
-    dateArray.add(int.parse(date.substring(0, 2)));
-    dateArray.add(int.parse(date.substring(3, 5)));
-    dateArray.add(int.parse(date.substring(6, 10)));
+    dateArray.add(int.parse(date.substring(0, 4)));
+    dateArray.add(int.parse(date.substring(5, 7)));
+    dateArray.add(int.parse(date.substring(8, 10)));
     return dateArray;
   }
 
 
 
   displayNotification(Task task)  {
-    final id = Random().nextInt(3332847);
-
     List<int> timeArray = _timeToArray(task.time);
-
+    List<int> dateArray = _dateToArray(task.date);
     AwesomeNotifications().createNotification(
         content: NotificationContent(
-            id: id,
+            id: task.id,
             channelKey: 'basic_channel',
             title: task.title,
             body: task.priority),
         schedule: NotificationCalendar(
-            allowWhileIdle: true,
+            year: dateArray[0],
+            month: dateArray[1],
+            day: dateArray[2],
             hour: timeArray[0],
             minute: timeArray[1],
-            second: 0,
-            repeats: true)
+            repeats: true,
+        )
+
     );
+  }
+
+  cancelNotification(Task task) {
+    AwesomeNotifications().cancel(task.id);
+    // check if notification is cancelled
+
   }
 }

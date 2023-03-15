@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mytask1/models/user.dart';
 
+import 'database.dart';
+
 
 class AuthService {
 
@@ -76,6 +78,10 @@ class AuthService {
       final userCredentials = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
       User? user = userCredentials.user;
+
+      // Create a new document for the user with the uid
+      await DatabaseService(uid: user!.uid).updateUserData('[Task title]', 'Medium', '2023-3-14', '15:00', false, 'Daily');
+
       return _userFromFirebaseUser(user);
     } on FirebaseAuthException catch (e) {
       switch (e.code) {

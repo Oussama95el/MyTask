@@ -1,9 +1,14 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:mytask1/services/notification.dart';
+import 'package:mytask1/screens/home/pagination_widget.dart';
+import 'package:mytask1/screens/home/task_list.dart';
 import '../../models/my_icon.dart';
+import '../../models/task.dart';
 import '../../services/auth.dart';
 import '../task/Task.dart';
+import 'package:mytask1/services/database.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   final String? title;
@@ -22,11 +27,7 @@ class _HomePageState extends State<HomePage> {
   get addTask => null;
 
   // state of the icon
-  final MyIcon myIcon = MyIcon();
-
-  String _formatDate(DateTime date) {
-    return '${date.day}/${date.month}/${date.year}';
-  }
+  final MyIcon myIcon = MyIcon(task: null);
 
   @override
   void initState() {
@@ -40,151 +41,119 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-
     final _auth = AuthService();
 
-    // formated date for the task
-    var tasks = [
-      Task(
-          title: "Buy groceries",
-          priority: "High",
-          date: _formatDate(DateTime.now()),
-          time: "10:00"),
-      Task(
-          title: "Attend meeting",
-          priority: "Normal",
-          date: _formatDate(DateTime.now().add(const Duration(days: 2))),
-          time: "14:00"),
-      Task(
-          title: "Complete project",
-          priority: "High",
-          date: _formatDate(DateTime.now().add(const Duration(days: 3))),
-          time: "15:45"),
-    ];
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home Page'),
-        elevation: 0,
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.menu),
-            onPressed: () {
-              showModalBottomSheet(
-                context: context,
-                builder: (BuildContext context) {
-                  return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ListTile(
-                        leading: const Icon(Icons.add),
-                        title: const Text('Add Task'),
-                        onTap: () {
-                          // Close the modal and perform the Add Task action
-                          Navigator.pop(context);
-                          // Add Task code goes here
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const TaskScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                      ListTile(
-                        leading: const Icon(Icons.logout),
-                        title: const Text('Logout'),
-                        onTap: () async {
-                          // Close the modal and perform the Logout action
-                          Navigator.pop(context);
-                          // Logout code goes here
-                          await _auth.signOut();
-                        },
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Task Manage',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    // //  display the task screen
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const TaskScreen(),
-                      ),
+    return StreamProvider<List<Task>>(
+      create: (context) => DatabaseService().tasks,
+      initialData: const [],
+      catchError: (context, error) {
+        // Handle the error here
+        print('Error: $error');
+        return [];
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Task Manage'),
+          elevation: 0,
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ListTile(
+                          leading: const Icon(Icons.add),
+                          title: const Text('Add Task'),
+                          onTap: () {
+                            // Close the modal and perform the Add Task action
+                            Navigator.pop(context);
+                            // Add Task code goes here
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const TaskScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                        ListTile(
+                          leading: const Icon(Icons.logout),
+                          title: const Text('Logout'),
+                          onTap: () async {
+                            // Close the modal and perform the Logout action
+                            Navigator.pop(context);
+                            // Logout code goes here
+                            await _auth.signOut();
+                          },
+                        ),
+                      ],
                     );
                   },
-                  child: const Text('Add Task'),
-                ),
-              ],
-            ),
-          ),
-          // body with list of tasks
-          Expanded(
-            child: ListView.builder(
-              itemCount: tasks.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(tasks[index].title),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 5),
-                      Text(
-                        'Priority: ${tasks[index].priority}',
-                        style: TextStyle(
-                          // change color based on priority
-                          color: tasks[index].priority == 'High'
-                              ? Colors.red
-                              : tasks[index].priority == 'Normal'
-                                  ? Colors.green
-                                  : Colors.blue,
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      Text('Date: ${tasks[index].date}'),
-                      const SizedBox(height: 5),
-                      Text('Time: ${tasks[index].time}'),
-                    ],
-                  ),
-                  trailing: IconButton(
-                    icon: MyIcon(
-                      task: tasks[index],
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        myIcon.isPressed = !myIcon.isPressed;
-                      });
-                      if (myIcon.isPressed) {
-                        print("pressed");
-                        NotificationService().displayNotification(tasks[index]);
-                      }
-                    },
-                  ),
                 );
               },
             ),
+          ],
+        ),
+        body: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(40),
+              topRight: Radius.circular(40),
+            ),
           ),
-        ],
+          child: const TaskList(),
+        ),
+        // bottomNavigationBar: PaginationWidget(),
       ),
     );
   }
 }
+
+//
+// Container(
+// padding: const EdgeInsets.all(20),
+// child: Row(
+// mainAxisAlignment: MainAxisAlignment.spaceBetween,
+// children: [
+// const Text(
+// 'Task Manage',
+// style: TextStyle(
+// fontSize: 20,
+// fontWeight: FontWeight.bold,
+// ),
+// ),
+// ElevatedButton(
+// onPressed: () {
+// // //  display the task screen
+// Navigator.push(
+// context,
+// MaterialPageRoute(
+// builder: (context) => const TaskScreen(),
+// ),
+// );
+// },
+// child: const Text('Add Task'),
+// ),
+// ],
+// ),
+// ),
+// // body with list of tasks
+// Expanded(
+// child: Container(
+// padding: const EdgeInsets.symmetric(horizontal: 20),
+// decoration: const BoxDecoration(
+// color: Colors.white,
+// borderRadius: BorderRadius.only(
+// topLeft: Radius.circular(40),
+// topRight: Radius.circular(40),
+// ),
+// ),
+// child: const TaskList(),
+// ),
+// ),
