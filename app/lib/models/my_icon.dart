@@ -45,7 +45,6 @@ class _MyIconState extends State<MyIcon> {
 
   void cancelNotification() {
     // Use the awesome_notification plugin to cancel your notification here
-    print('********* ${widget.task!.title} **********');
     notification.cancelNotification(widget.task!);
   }
 

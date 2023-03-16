@@ -45,9 +45,20 @@ class DatabaseService {
 
   // get task doc stream
   Stream<List<Task>> get tasks {
-    Query query = taskCollection.orderBy('priority', descending: true).limit(5);
+    Query query = taskCollection.orderBy('priority', descending: false).limit(5);
     return query.snapshots().map(_taskListFromSnapshot);
   }
+
+  // get the next 5 tasks from firebase
+  Future<List<Task>> getNextTasks(int lastId) async {
+    QuerySnapshot querySnapshot = await taskCollection
+        .orderBy('priority', descending: true)
+        .startAfter([lastId])
+        .limit(5)
+        .get();
+    return _taskListFromSnapshot(querySnapshot);
+  }
+
 
   // delete task from firebase
   Future<void> deleteTask(int id) async {

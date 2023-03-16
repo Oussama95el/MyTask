@@ -50,8 +50,7 @@ class NotificationService {
   }
 
   cancelNotification(Task task) {
+    print('canceling notification ${task.id}');
     AwesomeNotifications().cancel(task.id);
-    // check if notification is cancelled
-
   }
 }

@@ -14,7 +14,7 @@ To activate your reminder for the upcoming task, please follow these simple step
 
 If you have any questions or need assistance, please feel free to contact our customer support team. We are always here to help.
 
-Thank you for choosing our platform for your needs. We look forward to continuing to serve you.
+Thank you for choosing our app for your needs. We look forward to continuing to serve you.
 
 Best regards,
 

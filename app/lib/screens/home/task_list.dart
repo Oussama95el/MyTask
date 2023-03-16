@@ -15,8 +15,7 @@ class _TaskListState extends State<TaskList> {
   @override
   Widget build(BuildContext context) {
     final tasks = Provider.of<List<Task>>(context);
-    // get the last task in the list
-    final lastTask = tasks.last;
+
 
     return ListView.builder(
       itemCount: tasks.length,

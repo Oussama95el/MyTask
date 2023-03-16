@@ -43,6 +43,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final _auth = AuthService();
 
+
     return StreamProvider<List<Task>>(
       create: (context) => DatabaseService().tasks,
       initialData: const [],
@@ -107,9 +108,9 @@ class _HomePageState extends State<HomePage> {
               topRight: Radius.circular(40),
             ),
           ),
-          child:  TaskList(),
+          child:  const TaskList(),
         ),
-        // bottomNavigationBar: PaginationWidget(),
+
       ),
     );
   }

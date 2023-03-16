@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mytask1/screens/home/update_form.dart';
 import 'package:mytask1/services/database.dart';
-import 'package:provider/provider.dart';
 import '../../models/my_icon.dart';
 import '../../models/task.dart';
 
@@ -72,7 +71,6 @@ class TaskTile extends StatelessWidget {
             },
           ),
         ),
-        // new widget ListBody
       ),
     );
   }
